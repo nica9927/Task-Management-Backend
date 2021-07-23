@@ -21,7 +21,7 @@ let db = mysql.createConnection({
 
 //Get All Tasks
 app.get('/getAllTasks',(req,res) => {
-    db.query("SELECT * FROM tasks", (err,result)=>{
+    db.query("SELECT task_id,task_name,task_detail,task_created,members.member_id,members.member_name,statuses.status_id,statuses.status_name FROM `tasks`,`members`,`statuses` WHERE tasks.member_id = members.member_id AND tasks.status_id = statuses.status_id", (err,result)=>{
         if(err) throw err;
         let message = ""
         if(result === undefined || result.length == 0){
