@@ -32,6 +32,23 @@ app.get('/getAllTasks',(req,res) => {
     })
 })
 
+app.get('/getTask', (req,res) => {
+    let id = req.query.id;
+    if(!id){
+        return res.status(400).json({message: "Please Provide Task ID!"});
+    }else{
+        db.query("SELECT task_id,task_name,task_detail,task_created,members.member_id,members.member_name,statuses.status_id,statuses.status_name FROM `tasks`,`members`,`statuses` WHERE tasks.member_id = members.member_id AND tasks.status_id = statuses.status_id AND task_id = ?", id, (err,result)=>{
+            if(err) throw err;
+            let message = ""
+            if(result === undefined || result.length == 0){
+                message = "Task not found.";
+                return res.json({message:message});
+            }
+            return res.json(result);
+        })
+    }
+})
+
 // Add New Task
 app.post('/addTask',(req,res)=>{
     let title = req.body.title;
