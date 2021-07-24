@@ -101,9 +101,9 @@ app.get('/getMember',(req,res)=> {
             let message = ""
             if(result === undefined || result.length == 0){
                 message = "Member not found";
-                res.send({message:message});
+                return res.send({message:message});
             }else{
-                res.send(result);
+                return res.send(result);
             }
         })
     }
@@ -128,6 +128,25 @@ app.get('/getAllProjects', (req,res)=> {
         }
         return res.json(result);
     })
+})
+
+// Get Project by ID
+app.get('/getProject',(req,res)=>{
+    let id = req.query.id;
+
+    if(!id){
+        return res.status(400).send({message: "Please provide project id"})
+    }else{
+        db.query("SELECT * FROM projects WHERE id = ?",id,(err,result)=>{
+            if(err) throw err;
+            let message = ""
+            if(result === undefined || result.length == 0){
+                message = "Project not found";
+                return res.send({message : message})
+            }
+            return res.send(result);
+        })
+    }
 })
 ///////////////////////////////////////////////////////
 
