@@ -2,26 +2,30 @@ let express = require('express');
 let app = express();
 let mysql = require('mysql');
 let cors = require('cors');
+let bodyParser = require('body-parser')
 
 let PORT = process.env.PORT || 3000
 
 app.use(cors());
-app.use(express.json());
+// app.use(express.json());
+app.use(bodyParser.json());
 
 
 // Database Connection
 let db = mysql.createConnection({
-    user: "sql6427110",
-    password: "Fp6YdXYB78",
-    host: "sql6.freemysqlhosting.net",
-    database: "sql6427110"
+    user: "root",
+    password: "27091999",
+    host: "localhost",
+    database: "task_management"
 },(err) => {
     console.log(err);
 })
 
+///////////// TASKS ////////////////////////////
+
 //Get All Tasks
 app.get('/getAllTasks',(req,res) => {
-    db.query("SELECT task_id,task_name,task_detail,task_created,members.member_id,members.member_name,statuses.status_id,statuses.status_name FROM `tasks`,`members`,`statuses` WHERE tasks.member_id = members.member_id AND tasks.status_id = statuses.status_id", (err,result)=>{
+    db.query("select * from tasks,projects,members,statuses where member_id = members.id and project_id = projects.id and tasks.status_id = statuses.id", (err,result)=>{
         if(err) throw err;
         let message = ""
         if(result === undefined || result.length == 0){
@@ -32,12 +36,13 @@ app.get('/getAllTasks',(req,res) => {
     })
 })
 
+// Get Task By ID
 app.get('/getTask', (req,res) => {
     let id = req.query.id;
     if(!id){
         return res.status(400).json({message: "Please Provide Task ID!"});
     }else{
-        db.query("SELECT task_id,task_name,task_detail,task_created,members.member_id,members.member_name,statuses.status_id,statuses.status_name FROM `tasks`,`members`,`statuses` WHERE tasks.member_id = members.member_id AND tasks.status_id = statuses.status_id AND task_id = ?", id, (err,result)=>{
+        db.query("", id, (err,result)=>{
             if(err) throw err;
             let message = ""
             if(result === undefined || result.length == 0){
@@ -64,6 +69,13 @@ app.post('/addTask',(req,res)=>{
     }
 })
 
+
+/////////////////////////////////////////////////////////////////////
+
+
+
+///////////// MEMBERS ////////////////////////////
+
 // Get All Members
 app.get('/getAllMembers', (req, res) => {
     db.query("SELECT * FROM members", (err,result) => {
@@ -77,6 +89,34 @@ app.get('/getAllMembers', (req, res) => {
     })
 })
 
+// Get Member By ID
+app.get('/getMember',(req,res)=> {
+    let id = req.query.id;
+
+    if(!id){
+        return res.status(400).send({message: "Please Provide Member ID!"});
+    }else{
+        db.query("SELECT * FROM members WHERE id = ?", id, (err,result)=>{
+            if(err)throw err;
+            let message = ""
+            if(result === undefined || result.length == 0){
+                message = "Member not found";
+                res.send({message:message});
+            }else{
+                res.send(result);
+            }
+        })
+    }
+})
+
+
+
+/////////////////////////////////////////////////
+
+
+
+///////////// PROJECTS ////////////////////////////
+
 // Get All Projects
 app.get('/getAllProjects', (req,res)=> {
     db.query("SELECT * FROM projects", (err,result)=>{
@@ -89,7 +129,7 @@ app.get('/getAllProjects', (req,res)=> {
         return res.json(result);
     })
 })
-
+///////////////////////////////////////////////////////
 
 
 app.get('/',(req,res) => {
