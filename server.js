@@ -42,7 +42,7 @@ app.get('/getTask', (req,res) => {
     if(!id){
         return res.status(400).json({message: "Please Provide Task ID!"});
     }else{
-        db.query("", id, (err,result)=>{
+        db.query("select * from tasks,projects,members,statuses where member_id = members.id and project_id = projects.id and tasks.status_id = statuses.id and tasks.id = ?", id, (err,result)=>{
             if(err) throw err;
             let message = ""
             if(result === undefined || result.length == 0){
