@@ -12,11 +12,20 @@ app.use(bodyParser.json());
 
 
 // Database Connection
+// let db = mysql.createConnection({
+//     user: "root",
+//     password: "27091999",
+//     host: "localhost",
+//     database: "task_management"
+// },(err) => {
+//     console.log(err);
+// })
+
 let db = mysql.createConnection({
-    user: "root",
-    password: "27091999",
-    host: "localhost",
-    database: "task_management"
+    user: "sql6427110",
+    password: "Fp6YdXYB78",
+    host: "sql6.freemysqlhosting.net",
+    database: "sql6427110"
 },(err) => {
     console.log(err);
 })
@@ -25,7 +34,7 @@ let db = mysql.createConnection({
 
 //Get All Tasks
 app.get('/getAllTasks',(req,res) => {
-    db.query("select * from tasks,projects,members,statuses where member_id = members.id and project_id = projects.id and tasks.status_id = statuses.id", (err,result)=>{
+    db.query("call sp_get_tasks()", (err,result)=>{
         if(err) throw err;
         let message = ""
         if(result === undefined || result.length == 0){
@@ -78,7 +87,7 @@ app.post('/addTask',(req,res)=>{
 
 // Get All Members
 app.get('/getAllMembers', (req, res) => {
-    db.query("SELECT * FROM members", (err,result) => {
+    db.query("call sp_get_member()", (err,result) => {
         if(err)throw err;
         let message = ""
         if(result === undefined || result.length == 0){
